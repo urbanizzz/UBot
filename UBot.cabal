@@ -1,0 +1,30 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: b2e831e0371c41a0e8d54322bae5f4e5f8c3dfdb378a47f808ad3bf09cb06ce6
+
+name:           UBot
+version:        0.1.0.0
+category:       haskell project
+homepage:       https://github.com/urbanizzz/UBot#readme
+author:         urbanizzz
+maintainer:     yuraoskin@gmail.com
+copyright:      urbanizzz
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+executable UBot
+  main-is: Main.hs
+  other-modules:
+      Paths_UBot
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010

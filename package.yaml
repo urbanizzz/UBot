@@ -1,0 +1,20 @@
+name:                UBot
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/urbanizzz/UBot#readme
+license:             BSD3
+author:              urbanizzz
+maintainer:          yuraoskin@gmail.com
+copyright:           urbanizzz
+category:            haskell project
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+
+executables:
+  UBot:
+    source-dirs:      src
+    main:             Main.hs
