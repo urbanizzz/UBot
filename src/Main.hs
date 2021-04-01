@@ -7,13 +7,12 @@ import Control.Monad (when,guard)
 import Bot
 
 errPrint :: String -> IO ()
-errPrint err = putStrLn $ err ++ " Use\nUBot {vk,tg,cl} <token>"
+errPrint err = putStrLn $ err ++ "\nUsage: UBot {vk,tg,cl} <token>"
+
+botTypes = ["vk","tg","cl"]
 
 checkBotType :: String -> Bool
-checkBotType "vk" = True
-checkBotType "tg" = True
-checkBotType "cl" = True
-checkBotType _ = False
+checkBotType x = x `elem` botTypes
 
 main :: IO ()
 main = do
