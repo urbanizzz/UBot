@@ -1,3 +1,4 @@
+-- main module
 -- TODO избавиться от guard, он дает лишнее сообщение об ошибке
 module Main where
 
@@ -25,5 +26,6 @@ main = do
   when (length rest == 0) $ errPrint $ "Bot token is not specified."
   guard (length rest > 0)
   let botToken = head rest
-  botMain botType botToken
+  let exitCode = createBot botType botToken
+  return ()
 
