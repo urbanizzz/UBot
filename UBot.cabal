@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 54403de95c215bad5d0beffa67fecb5acfa2c173ebd6d2f2e82caa35b98ebd79
+-- hash: 8483524baac3809face1da309212f4e72e9e38fdc3c85b639c8e90bdf1a8d369
 
 name:           UBot
 version:        0.1.0.0
@@ -23,6 +23,8 @@ executable UBot
   main-is: Main.hs
   other-modules:
       Bot
+      Config
+      Types
       Paths_UBot
   hs-source-dirs:
       src
