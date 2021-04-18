@@ -16,6 +16,8 @@ dependencies:
   - bytestring
   - containers
   - mtl
+  - aeson
+  - aeson-pretty
 
 executables:
   UBot:
