@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 718acf5726fbd36b0ca6cdc0932d29a6d3356e65e0e4bb9fc93f85d61a345d31
+-- hash: c3cd25f0c64773db63e8fe370b933836bb9c9191f8043198d551a5925f62bddf
 
 name:           UBot
 version:        0.1.0.0
@@ -35,5 +35,7 @@ executable UBot
     , base >=4.7 && <5
     , bytestring
     , containers
+    , extra
     , mtl
+    , text
   default-language: Haskell2010

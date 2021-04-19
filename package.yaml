@@ -18,6 +18,8 @@ dependencies:
   - mtl
   - aeson
   - aeson-pretty
+  - extra
+  - text
 
 executables:
   UBot:

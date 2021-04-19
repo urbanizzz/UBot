@@ -22,8 +22,10 @@ newState btype btoken = Environment
   , config = getConfig
   }
 
-createBot :: BotType -> BotToken -> ()
-createBot botType botToken = fst . runState mainBot $ newState botType botToken
+createBot :: BotType -> BotToken -> IO ()
+createBot botType botToken = do
+  (a,s) <- (runStateT mainBot) $ newState botType botToken
+  return a
 
 getEvent :: Environment -> IO Event
 getEvent env = do
@@ -39,10 +41,10 @@ execHelpCommand st = undefined
 execRepeatCommand st = undefined
 repeatMessage msg st = undefined
 
-mainBot :: State Environment ()
+mainBot :: StateT Environment IO ()
 mainBot = do
   st <- get
-  event <- getEvent st
+  event <- lift $ getEvent st
   case event of
     HelpCommand   -> execHelpCommand st
     RepeatCommand -> modify (execRepeatCommand st)

@@ -26,6 +26,6 @@ main = do
   when (length rest == 0) $ errPrint $ "Bot token is not specified."
   guard (length rest > 0)
   let botToken = head rest
-  let exitCode = createBot botType botToken
+  exitCode <- createBot botType botToken
   return ()
 
