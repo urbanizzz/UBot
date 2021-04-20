@@ -6,13 +6,14 @@ module Bot
 
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Map.Lazy as M
-import qualified ClBot as CL
+import qualified ClBot as Cl
 
 
 import Control.Monad.State
 
 import Types
 import Config
+import Data.Aeson (Value)
 
 newState :: BotType -> BotToken -> Environment
 newState btype btoken = Environment
@@ -32,21 +33,31 @@ getEvent env = do
   event <- case (botType env) of
     "vk" -> undefined
     "tg" -> undefined
-    "cl" -> CL.getMessage
+    "cl" -> Cl.getMessage
   return event
 
+helpMessage :: Environment -> Value
+helpMessage env = stringToValue . about . config $ env
 
+execHelpCommand :: Environment -> IO ()
+execHelpCommand env = do
+  let helpMsg = helpMessage $ env
+  case (botType env) of
+    "vk" -> undefined
+    "tg" -> undefined
+    "cl" -> Cl.sendMessage $ helpMsg
+  
 
-execHelpCommand st = undefined
-execRepeatCommand st = undefined
-repeatMessage msg st = undefined
+execRepeatCommand st = undefined --print $ "REPEAT" ++ botType st
+repeatMessage msg st = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
+
 
 mainBot :: StateT Environment IO ()
 mainBot = do
   st <- get
   event <- lift $ getEvent st
   case event of
-    HelpCommand   -> execHelpCommand st
+    HelpCommand   -> lift $ execHelpCommand st
     RepeatCommand -> modify (execRepeatCommand st)
     Message msg   -> repeatMessage msg st
 

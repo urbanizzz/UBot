@@ -11,8 +11,9 @@ module Types where
 -}
 
 import qualified Data.Map.Lazy as M
-import           Control.Monad.State
+import qualified Data.Text as T
 
+import Control.Monad.State
 import Config
 import Data.Aeson
 
@@ -31,4 +32,11 @@ data Environment = Environment
   }
 
 data Event = HelpCommand | RepeatCommand | Message Value
+
+stringToValue :: String -> Value
+stringToValue str = String $ T.pack str
+
+valueToString :: Value -> Either String String
+valueToString (String str) = Right . T.unpack $ str
+valueToString  _ = Left "Value is not (String a)"
 
