@@ -6,6 +6,10 @@ import System.Environment (getArgs)
 import Control.Monad (when,guard)
 
 import Bot
+import Types
+  ( BotType (..)
+  , BotToken (..)
+  )
 
 errPrint :: String -> IO ()
 errPrint err = putStrLn $ err ++ "\nUsage: UBot {vk,tg,cl} <token>"
@@ -26,6 +30,6 @@ main = do
   when (length rest == 0) $ errPrint $ "Bot token is not specified."
   guard (length rest > 0)
   let botToken = head rest
-  exitCode <- createBot botType botToken
+  exitCode <- createBot (BotType botType) (BotToken botToken)
   return ()
 

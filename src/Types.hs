@@ -14,24 +14,28 @@ import qualified Data.Map.Lazy as M
 import qualified Data.Text as T
 
 import Control.Monad.State
-import Config
-import Data.Aeson
+import Data.Aeson (Value(..))
 
-type BotType = String
-type BotToken = String
-type UserName = String
-type RepeatNumber = Int
-type UsersRepeat = M.Map UserName RepeatNumber
+import Config
+
+newtype BotType       = BotType       {unBotType      :: String}
+newtype BotToken      = BotToken      {unBotToken     :: String}
+newtype UserName      = UserName      {unUserName     :: String}
+newtype RepeatNumber  = RepeatNumber  {unRepeatNumber :: Int}
+newtype UserRepeat    = UserRepeat    {unUserRepeat   :: M.Map UserName RepeatNumber}
+newtype UserMessage   = UserMessage   {unUserMessage  :: Value}
 -- newtype BotState a = BotState {runBotState :: State Environment a}
 
 data Environment = Environment
   { botType :: BotType
   , botToken :: BotToken
-  , userRepeat :: UsersRepeat
+  , userRepeat :: UserRepeat
   , config :: Config
   }
 
-data Event = HelpCommand | RepeatCommand | Message Value
+data Event  = HelpCommand UserName
+            | RepeatCommand UserName
+            | Message UserName UserMessage
 
 stringToValue :: String -> Value
 stringToValue str = String $ T.pack str

@@ -19,7 +19,7 @@ newState :: BotType -> BotToken -> Environment
 newState btype btoken = Environment
   { botType = btype
   , botToken = btoken
-  , userRepeat = M.empty
+  , userRepeat = UserRepeat M.empty
   , config = getConfig
   }
 
@@ -30,7 +30,7 @@ createBot botType botToken = do
 
 getEvent :: Environment -> IO Event
 getEvent env = do
-  event <- case (botType env) of
+  event <- case (unBotType . botType $ env) of
     "vk" -> undefined
     "tg" -> undefined
     "cl" -> Cl.getMessage
@@ -39,17 +39,17 @@ getEvent env = do
 helpMessage :: Environment -> Value
 helpMessage env = stringToValue . about . config $ env
 
-execHelpCommand :: Environment -> IO ()
-execHelpCommand env = do
+execHelpCommand :: UserName -> Environment -> IO ()
+execHelpCommand userName env = do
   let helpMsg = helpMessage $ env
-  case (botType env) of
+  case (unBotType . botType $ env) of
     "vk" -> undefined
     "tg" -> undefined
-    "cl" -> Cl.sendMessage $ helpMsg
+    "cl" -> Cl.sendMessage helpMsg
   
 
-execRepeatCommand st = undefined --print $ "REPEAT" ++ botType st
-repeatMessage msg st = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
+execRepeatCommand userName st = undefined --print $ "REPEAT" ++ botType st
+repeatMessage msg userName st = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
 
 
 mainBot :: StateT Environment IO ()
@@ -57,9 +57,9 @@ mainBot = do
   st <- get
   event <- lift $ getEvent st
   case event of
-    HelpCommand   -> lift $ execHelpCommand st
-    RepeatCommand -> modify (execRepeatCommand st)
-    Message msg   -> repeatMessage msg st
+    HelpCommand userName    -> lift $ execHelpCommand userName st
+    RepeatCommand userName  -> modify (execRepeatCommand userName st)
+    Message userName msg    -> repeatMessage userName msg st
 
 
 

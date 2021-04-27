@@ -5,14 +5,25 @@ module ClBot
   ) where
 
 import Data.List.Extra (lower,trim)
-import Types (valueToString, stringToValue, Event (..))
-import Data.Aeson (Value)
+import Data.Aeson
+  ( Value
+  )
+
+import Types 
+  ( valueToString
+  , stringToValue
+  , Event (..)
+  , UserName (..)
+  , UserMessage (..)
+  )
+
+noneUser = UserName "none"
 
 parseMessage :: String -> Event
 parseMessage msg = case (lower . trim $ msg) of
-  "/help" -> HelpCommand
-  "/repeat" -> RepeatCommand
-  otherwise -> Message $ stringToValue $ msg
+  "/help" -> HelpCommand noneUser
+  "/repeat" -> RepeatCommand noneUser
+  otherwise -> Message (noneUser) (UserMessage . stringToValue $ msg)
 
 getMessage :: IO Event
 getMessage = do
