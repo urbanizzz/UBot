@@ -27,15 +27,28 @@ newtype UserMessage   = UserMessage   {unUserMessage  :: Value}
 -- newtype BotState a = BotState {runBotState :: State Environment a}
 
 data Environment = Environment
-  { botType :: BotType
-  , botToken :: BotToken
-  , userRepeat :: UserRepeat
-  , config :: Config
+  { botType     :: BotType
+  , botToken    :: BotToken
+  , userRepeat  :: UserRepeat
+  , config      :: Config
   }
 
-data Event  = HelpCommand UserName
-            | RepeatCommand UserName
-            | Message UserName UserMessage
+data Event  = HelpCommand EventEscort
+            | RepeatCommand EventEscort
+            | Message EventEscort
+
+data EventEscort = Escort
+  { userName    :: UserName
+  , userMessage :: UserMessage
+  }
+
+-- переделать с IO на Monad m
+data Handle = Handle
+  { getEvent    :: IO Event
+  , sendMessage :: UserName -> UserMessage -> IO ()
+  , sendHelp    :: UserName -> IO ()
+  , getRepeat   :: UserName -> IO ()
+  }
 
 stringToValue :: String -> Value
 stringToValue str = String $ T.pack str

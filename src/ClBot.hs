@@ -1,7 +1,7 @@
 -- module of Command Line Bot
 module ClBot
-  ( getMessage
-  , sendMessage
+  ( getMessageCl
+  , sendMessageCl
   ) where
 
 import Data.List.Extra (lower,trim)
@@ -15,24 +15,44 @@ import Types
   , Event (..)
   , UserName (..)
   , UserMessage (..)
+  , Handle (..)
+  , EventEscort (..)
   )
 
 noneUser = UserName "none"
+nullMessage = UserMessage . stringToValue $ ""
 
 parseMessage :: String -> Event
 parseMessage msg = case (lower . trim $ msg) of
-  "/help" -> HelpCommand noneUser
-  "/repeat" -> RepeatCommand noneUser
-  otherwise -> Message (noneUser) (UserMessage . stringToValue $ msg)
+  "/help"   -> HelpCommand $ Escort noneUser nullMessage
+  "/repeat" -> RepeatCommand $ Escort noneUser nullMessage
+  otherwise -> Message $ Escort (noneUser) (UserMessage . stringToValue $ msg)
 
-getMessage :: IO Event
-getMessage = do
+{-
+data Handle = Handle
+  { getEvent    :: Monad m => m Event
+  , sendMessage :: Monad m => UserName -> UserMessage -> m ()
+  , sendHelp    :: Monad m => UserName -> m ()
+  , getRepeat   :: Monad m => UserName -> m ()
+  }
+-}
+
+newHandle :: Handle
+newHandle = Handle
+  { getEvent    = getMessageCl
+  , sendMessage = undefined
+  , sendHelp    = undefined
+  , getRepeat   = undefined
+  }
+
+getMessageCl :: IO Event
+getMessageCl = do
   msg <- getLine
   let event = parseMessage msg
   return event
 
-sendMessage :: Value -> IO ()
-sendMessage msg = case (valueToString msg) of
+sendMessageCl :: Value -> IO ()
+sendMessageCl msg = case (valueToString msg) of
   (Right str) -> putStrLn $ str
   (Left str)  -> putStrLn $ "Error in Cl.sendMessage: " ++ str
 

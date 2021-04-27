@@ -28,38 +28,38 @@ createBot botType botToken = do
   (a,s) <- (runStateT mainBot) $ newState botType botToken
   return a
 
-getEvent :: Environment -> IO Event
-getEvent env = do
+getBotEvent :: Environment -> IO Event
+getBotEvent env = do
   event <- case (unBotType . botType $ env) of
     "vk" -> undefined
     "tg" -> undefined
-    "cl" -> Cl.getMessage
+    "cl" -> Cl.getMessageCl
   return event
 
 helpMessage :: Environment -> Value
 helpMessage env = stringToValue . about . config $ env
 
-execHelpCommand :: UserName -> Environment -> IO ()
-execHelpCommand userName env = do
+execHelpCommand :: EventEscort -> Environment -> IO ()
+execHelpCommand escort env = do
   let helpMsg = helpMessage $ env
   case (unBotType . botType $ env) of
     "vk" -> undefined
     "tg" -> undefined
-    "cl" -> Cl.sendMessage helpMsg
+    "cl" -> Cl.sendMessageCl helpMsg
   
 
-execRepeatCommand userName st = undefined --print $ "REPEAT" ++ botType st
-repeatMessage msg userName st = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
+execRepeatCommand escort st = undefined --print $ "REPEAT" ++ botType st
+repeatMessage escort st     = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
 
 
 mainBot :: StateT Environment IO ()
 mainBot = do
   st <- get
-  event <- lift $ getEvent st
+  event <- lift $ getBotEvent st
   case event of
-    HelpCommand userName    -> lift $ execHelpCommand userName st
-    RepeatCommand userName  -> modify (execRepeatCommand userName st)
-    Message userName msg    -> repeatMessage userName msg st
+    HelpCommand escort    -> lift $ execHelpCommand escort st
+    RepeatCommand escort  -> modify (execRepeatCommand escort st)
+    Message escort        -> repeatMessage escort st
 
 
 
