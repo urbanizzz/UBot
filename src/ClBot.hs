@@ -1,7 +1,6 @@
 -- module of Command Line Bot
 module ClBot
-  ( getMessageCl
-  , sendMessageCl
+  ( newHandle
   ) where
 
 import Data.List.Extra (lower,trim)
@@ -40,9 +39,9 @@ data Handle = Handle
 newHandle :: Handle
 newHandle = Handle
   { getEvent    = getMessageCl
-  , sendMessage = undefined
-  , sendHelp    = undefined
-  , getRepeat   = undefined
+  , sendMessage = sendMessageCl
+  , sendHelp    = sendHelpCl
+  , getRepeat   = getRepeatCl
   }
 
 getMessageCl :: IO Event
@@ -51,8 +50,16 @@ getMessageCl = do
   let event = parseMessage msg
   return event
 
-sendMessageCl :: Value -> IO ()
-sendMessageCl msg = case (valueToString msg) of
-  (Right str) -> putStrLn $ str
-  (Left str)  -> putStrLn $ "Error in Cl.sendMessage: " ++ str
+sendMessageCl :: EventEscort -> IO ()
+sendMessageCl escort = 
+  case (valueToString . unUserMessage . userMessage $ escort) of
+    (Right str) -> putStrLn $ str
+    (Left str)  -> putStrLn $ "Error in sendMessageCl: " ++ str
+
+sendHelpCl :: EventEscort -> Value -> IO ()
+sendHelpCl _ helpMsg = case valueToString helpMsg of
+  Left error -> putStrLn $ "Error in ClBot.sendHelp: " ++ error
+  Right msg -> putStrLn msg
+
+getRepeatCl = undefined
 

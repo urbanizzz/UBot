@@ -45,9 +45,9 @@ data EventEscort = Escort
 -- переделать с IO на Monad m
 data Handle = Handle
   { getEvent    :: IO Event
-  , sendMessage :: UserName -> UserMessage -> IO ()
-  , sendHelp    :: UserName -> IO ()
-  , getRepeat   :: UserName -> IO ()
+  , sendMessage :: EventEscort -> IO ()
+  , sendHelp    :: EventEscort -> Value -> IO ()
+  , getRepeat   :: EventEscort -> IO ()
   }
 
 stringToValue :: String -> Value

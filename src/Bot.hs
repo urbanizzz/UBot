@@ -23,49 +23,38 @@ newState btype btoken = Environment
   , config = getConfig
   }
 
+newHandle :: BotType -> Handle
+newHandle (BotType botType) = case botType of
+  "vk" -> undefined
+  "tg" -> undefined
+  "cl" -> Cl.newHandle
+  
 createBot :: BotType -> BotToken -> IO ()
 createBot botType botToken = do
-  (a,s) <- (runStateT mainBot) $ newState botType botToken
+  (a,s) <- (runStateT (mainBot $ newHandle botType)) $ newState botType botToken
   return a
 
-getBotEvent :: Environment -> IO Event
-getBotEvent env = do
-  event <- case (unBotType . botType $ env) of
-    "vk" -> undefined
-    "tg" -> undefined
-    "cl" -> Cl.getMessageCl
-  return event
+getBotEvent :: Handle -> IO Event
+getBotEvent handle = getEvent handle
 
 helpMessage :: Environment -> Value
 helpMessage env = stringToValue . about . config $ env
 
-execHelpCommand :: EventEscort -> Environment -> IO ()
-execHelpCommand escort env = do
+execHelpCommand :: Handle -> EventEscort -> Environment -> IO ()
+execHelpCommand handle escort env = do
   let helpMsg = helpMessage $ env
-  case (unBotType . botType $ env) of
-    "vk" -> undefined
-    "tg" -> undefined
-    "cl" -> Cl.sendMessageCl helpMsg
-  
+  (sendHelp handle) escort helpMsg
 
-execRepeatCommand escort st = undefined --print $ "REPEAT" ++ botType st
-repeatMessage escort st     = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
+execRepeatCommand handle escort st = undefined --print $ "REPEAT" ++ botType st
+repeatMessage handle escort st     = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
 
 
-mainBot :: StateT Environment IO ()
-mainBot = do
+mainBot :: Handle -> StateT Environment IO ()
+mainBot handle = forever $ do
   st <- get
-  event <- lift $ getBotEvent st
+  event <- lift $ getBotEvent handle
   case event of
-    HelpCommand escort    -> lift $ execHelpCommand escort st
-    RepeatCommand escort  -> modify (execRepeatCommand escort st)
-    Message escort        -> repeatMessage escort st
-
-
-
-
-
-
-
-
+    HelpCommand escort    -> lift $ execHelpCommand handle escort st
+    RepeatCommand escort  -> modify (execRepeatCommand handle escort st)
+    Message escort        -> repeatMessage handle escort st
 

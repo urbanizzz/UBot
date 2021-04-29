@@ -10,5 +10,5 @@ data Config = Config
   }
 
 getConfig :: Config
-getConfig = Config 3 "UrbanizzzBot" "Enter the number of repetitions"
+getConfig = Config 3 "UBot - simple echo bot" "Enter the number of repetitions"
 
