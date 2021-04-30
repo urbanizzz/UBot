@@ -3,6 +3,8 @@ module ClBot
   ( newHandle
   ) where
 
+import qualified Data.Text as T
+
 import Data.List.Extra (lower,trim)
 import Data.Aeson
   ( Value
@@ -18,7 +20,7 @@ import Types
   , EventEscort (..)
   )
 
-noneUser = UserName "none"
+noneUser = UserName . T.pack $ "none"
 nullMessage = UserMessage . stringToValue $ ""
 
 parseMessage :: String -> Event
@@ -54,11 +56,11 @@ sendMessageCl :: EventEscort -> IO ()
 sendMessageCl escort = 
   case (valueToString . unUserMessage . userMessage $ escort) of
     (Right str) -> putStrLn $ str
-    (Left str)  -> putStrLn $ "Error in sendMessageCl: " ++ str
+    (Left str)  -> putStrLn $ "Error in ClBot.sendMessageCl: " ++ str
 
 sendHelpCl :: EventEscort -> Value -> IO ()
 sendHelpCl _ helpMsg = case valueToString helpMsg of
-  Left error -> putStrLn $ "Error in ClBot.sendHelp: " ++ error
+  Left error -> putStrLn $ "Error in ClBot.sendHelpCl: " ++ error
   Right msg -> putStrLn msg
 
 getRepeatCl = undefined

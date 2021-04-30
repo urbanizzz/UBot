@@ -20,16 +20,17 @@ import Config
 
 newtype BotType       = BotType       {unBotType      :: String}
 newtype BotToken      = BotToken      {unBotToken     :: String}
-newtype UserName      = UserName      {unUserName     :: String}
+newtype UserName      = UserName      {unUserName     :: T.Text}
+  deriving (Eq, Ord)
 newtype RepeatNumber  = RepeatNumber  {unRepeatNumber :: Int}
-newtype UserRepeat    = UserRepeat    {unUserRepeat   :: M.Map UserName RepeatNumber}
+newtype UsersRepeat    = UsersRepeat    {unUsersRepeat   :: M.Map UserName RepeatNumber}
 newtype UserMessage   = UserMessage   {unUserMessage  :: Value}
 -- newtype BotState a = BotState {runBotState :: State Environment a}
 
 data Environment = Environment
   { botType     :: BotType
   , botToken    :: BotToken
-  , userRepeat  :: UserRepeat
+  , usersRepeat  :: UsersRepeat
   , config      :: Config
   }
 

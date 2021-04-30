@@ -19,7 +19,7 @@ newState :: BotType -> BotToken -> Environment
 newState btype btoken = Environment
   { botType = btype
   , botToken = btoken
-  , userRepeat = UserRepeat M.empty
+  , usersRepeat = UsersRepeat M.empty
   , config = getConfig
   }
 
@@ -46,8 +46,16 @@ execHelpCommand handle escort env = do
   (sendHelp handle) escort helpMsg
 
 execRepeatCommand handle escort st = undefined --print $ "REPEAT" ++ botType st
-repeatMessage handle escort st     = undefined --print $ "MESSAGE" ++ botType st ++ "\n" ++ msg
+repeatMessage :: Handle -> EventEscort -> Environment -> IO ()
+repeatMessage handle escort st = replicateM_ num act
+  where num = getUserRepeat name st
+        name = userName escort
+        act = sendMessage handle escort
 
+getUserRepeat :: UserName -> Environment -> Int
+getUserRepeat name st = case M.lookup name (unUsersRepeat . usersRepeat $ st) of
+  Just rep -> unRepeatNumber rep
+  Nothing -> repeatDefault . config $ st
 
 mainBot :: Handle -> StateT Environment IO ()
 mainBot handle = forever $ do
@@ -56,5 +64,5 @@ mainBot handle = forever $ do
   case event of
     HelpCommand escort    -> lift $ execHelpCommand handle escort st
     RepeatCommand escort  -> modify (execRepeatCommand handle escort st)
-    Message escort        -> repeatMessage handle escort st
+    Message escort        -> lift $ repeatMessage handle escort st
 
