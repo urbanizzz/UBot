@@ -38,24 +38,41 @@ getBotEvent :: Handle -> IO Event
 getBotEvent handle = getEvent handle
 
 helpMessage :: Environment -> Value
-helpMessage env = stringToValue . about . config $ env
+helpMessage = stringToValue . about . config
 
 execHelpCommand :: Handle -> EventEscort -> Environment -> IO ()
 execHelpCommand handle escort env = do
   let helpMsg = helpMessage $ env
   (sendHelp handle) escort helpMsg
 
-execRepeatCommand handle escort st = undefined --print $ "REPEAT" ++ botType st
+repeatQuestionText :: Environment -> Value
+repeatQuestionText = stringToValue . repeatQuestion . config
+
+execRepeatCommand :: Handle -> EventEscort -> StateT Environment IO ()
+execRepeatCommand handle escort = do
+  st <- get
+  let name = getUserName escort
+  let repeat = getUserRepeat name $ st
+  let repeatMsg = repeatQuestionText st
+  let repeatMap = unUsersRepeat . usersRepeat $ st
+  numberOfRepeat <- lift $ (getRepeat handle) escort repeat repeatMsg
+  let newRepeatMap = M.insert name numberOfRepeat repeatMap
+  let stNew = st {usersRepeat = UsersRepeat newRepeatMap}
+  put stNew
+
 repeatMessage :: Handle -> EventEscort -> Environment -> IO ()
 repeatMessage handle escort st = replicateM_ num act
-  where num = getUserRepeat name st
-        name = userName escort
+  where num = unRepeatNumber . getUserRepeat name $ st
+        name = getUserName escort
         act = sendMessage handle escort
 
-getUserRepeat :: UserName -> Environment -> Int
+getUserName :: EventEscort -> UserName
+getUserName = userName
+
+getUserRepeat :: UserName -> Environment -> RepeatNumber
 getUserRepeat name st = case M.lookup name (unUsersRepeat . usersRepeat $ st) of
-  Just rep -> unRepeatNumber rep
-  Nothing -> repeatDefault . config $ st
+  Just rep -> rep
+  Nothing -> RepeatNumber . repeatDefault . config $ st
 
 mainBot :: Handle -> StateT Environment IO ()
 mainBot handle = forever $ do
@@ -63,6 +80,6 @@ mainBot handle = forever $ do
   event <- lift $ getBotEvent handle
   case event of
     HelpCommand escort    -> lift $ execHelpCommand handle escort st
-    RepeatCommand escort  -> modify (execRepeatCommand handle escort st)
+    RepeatCommand escort  -> execRepeatCommand handle escort
     Message escort        -> lift $ repeatMessage handle escort st
 

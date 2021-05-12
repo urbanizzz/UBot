@@ -4,6 +4,7 @@ module ClBot
   ) where
 
 import qualified Data.Text as T
+import qualified Text.Read as Read
 
 import Data.List.Extra (lower,trim)
 import Data.Aeson
@@ -16,6 +17,7 @@ import Types
   , Event (..)
   , UserName (..)
   , UserMessage (..)
+  , RepeatNumber (..)
   , Handle (..)
   , EventEscort (..)
   )
@@ -61,7 +63,20 @@ sendMessageCl escort =
 sendHelpCl :: EventEscort -> Value -> IO ()
 sendHelpCl _ helpMsg = case valueToString helpMsg of
   Left error -> putStrLn $ "Error in ClBot.sendHelpCl: " ++ error
-  Right msg -> putStrLn msg
+  Right msg  -> putStrLn msg
 
-getRepeatCl = undefined
+getRepeatCl :: EventEscort -> RepeatNumber -> Value -> IO RepeatNumber
+getRepeatCl _ repeatOld repeatQuestion = do
+  case valueToString repeatQuestion of
+    Left error  -> do
+      putStrLn $ "Error in ClBot.getRepeatCl: " ++ error
+      return repeatOld
+    Right msg   -> do
+      putStrLn msg
+      val <- getLine
+      case (Read.readMaybe val :: Maybe Int) of
+        Nothing -> return repeatOld
+        Just rep -> if rep `elem` [1..5]
+                      then return $ RepeatNumber rep
+                      else return repeatOld
 

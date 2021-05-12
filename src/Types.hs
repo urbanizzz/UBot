@@ -1,14 +1,4 @@
 module Types where
-{-
-  ( BotType
-  , BotToken
-  , UserName
-  , RepeatNumber
-  , UsersRepeat
---  , BotState (..)
-  , Environment (..)
-  ) where
--}
 
 import qualified Data.Map.Lazy as M
 import qualified Data.Text as T
@@ -23,9 +13,8 @@ newtype BotToken      = BotToken      {unBotToken     :: String}
 newtype UserName      = UserName      {unUserName     :: T.Text}
   deriving (Eq, Ord)
 newtype RepeatNumber  = RepeatNumber  {unRepeatNumber :: Int}
-newtype UsersRepeat    = UsersRepeat    {unUsersRepeat   :: M.Map UserName RepeatNumber}
+newtype UsersRepeat   = UsersRepeat   {unUsersRepeat  :: M.Map UserName RepeatNumber}
 newtype UserMessage   = UserMessage   {unUserMessage  :: Value}
--- newtype BotState a = BotState {runBotState :: State Environment a}
 
 data Environment = Environment
   { botType     :: BotType
@@ -48,7 +37,7 @@ data Handle = Handle
   { getEvent    :: IO Event
   , sendMessage :: EventEscort -> IO ()
   , sendHelp    :: EventEscort -> Value -> IO ()
-  , getRepeat   :: EventEscort -> IO ()
+  , getRepeat   :: EventEscort -> RepeatNumber -> Value -> IO RepeatNumber
   }
 
 stringToValue :: String -> Value
