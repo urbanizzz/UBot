@@ -4,11 +4,19 @@ module Config
   ) where
 
 data Config = Config
-  { repeatDefault   :: Int
-  , about           :: String
-  , repeatQuestion  :: String
+  { repeatDefault                       :: Int
+  , repeatQuestion                      :: String
+  , repeatMaxNumber                     :: Int
+  , about                               :: String
+  , unknownCommandMessage               :: String
   }
 
 getConfig :: Config
-getConfig = Config 3 "UBot - simple echo bot" "Enter the number of repetitions"
+getConfig = Config
+  { repeatDefault = 3
+  , repeatMaxNumber = 5
+  , repeatQuestion = "Enter the number of repetitions"
+  , about = "UBot - simple echo bot.\n/help to get this help\n/repeat to set the number of repetition"
+  , unknownCommandMessage = "Unknown command: enter /help to get help"
+  }
 
